@@ -22,8 +22,16 @@ class Matrix {
 		Matrix( int = 1, int = 1 ); // Constructor paramétrico/por defecto.
 		Matrix( const Matrix & ); // Constructor copia.
 		~Matrix(); // Destructor.
-		const Matrix &operator +( const Matrix & );
-		const Matrix &operator -( const Matrix & );
+
+		// Funciones miembro.
+		int getRows() { return m; }
+		int getCols() { return n; }
+
+		// Operadores sobrecargados.
+		const Matrix &operator =( const Matrix & ); // Operador de copia.
+		const Matrix operator +( const Matrix & ); // Operador de adición.
+		const Matrix operator -( const Matrix & ); // Operador de sustracción.
+		const Matrix operator *( const Matrix & ); // Operador de producto.
 	private:
 		int m; // Número de renglones de la matriz.
 		int n; // Número de columnas de la matrix.

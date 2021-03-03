@@ -29,16 +29,7 @@ Matrix::Matrix( int nRen, int nCol ) {
 }
 
 // Constructor copia: Crea matriz a partir de otra.
-Matrix::Matrix( const Matrix &matrix ) {
-	// En caso de ser una matriz ya inicializada, eliminamos sus elementos.
-	if( elemPtr ) delete [] elemPtr;
-
-	// Asignamos el número de elementos de la nueva matriz.
-	m = matrix.m; n = matrix.n;
-
-	// Apartamos el espacio necesario para almacenar la nueva matriz.
-	elemPtr = new double[ m*n ];
-
+Matrix::Matrix( const Matrix &matrix ) : Matrix( matrix.m, matrix.n ) {
 	// Copiamos los elementos de la matriz a copiar en la nueva.
 	for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = matrix.elemPtr[i];
 }
@@ -50,29 +41,92 @@ Matrix::~Matrix() {
 }
 
 // Operadores sobrecargados.
+	// Operador de asignación.
+const Matrix &Matrix::operator =( const Matrix &right ) {
+
+	// Para evitar autoasignación.
+	if( &right != this ) {
+		delete [] elemPtr;
+		m = right.m; n = right.n;
+
+		elemPtr = new double[ m*n ];
+		for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = right.elemPtr[i];
+	}
+
+	return *this;
+}
+
 	// Operador de adición.
-//const Matrix &Matrix::operator +( const Matrix &m ) {
-//}
-//
-//const Matrix &operator -( const Matrix & );
+const Matrix Matrix::operator +( const Matrix &right ) {
+	Matrix res;
+	
+	// Si la matriz tiene las mismas dimensiones se realiza la operación.
+	if( m == right.m && n == right.n ) {
+		res.m = m; res.n = n;
+		if( res.elemPtr ) delete [] res.elemPtr;
+
+		res.elemPtr = new double [ res.m*res.n ]; 
+		for( int i = 0; i < ( m*n ); i++ )
+			res.elemPtr[i] = elemPtr[i] + right.elemPtr[i];
+	}
+
+	return res;
+}
+
+const Matrix Matrix::operator -( const Matrix &right ) {
+	Matrix res;
+
+	// Si la matriz tiene las mismas dimensiones se realiza la operación.
+	if( m == right.m && n == right.n ) {
+		res.m = m; res.n = n;
+		if( res.elemPtr ) delete [] res.elemPtr;
+
+		res.elemPtr = new double [ res.m*res.n ]; 
+		for( int i = 0; i < ( m*n ); i++ )
+			res.elemPtr[i] = elemPtr[i] - right.elemPtr[i];
+	}
+
+	return res;
+}
+
+const Matrix Matrix::operator *( const Matrix &right ) {
+	Matrix res;
+
+	// Verificamos si las matrices son multiplicables.
+	if( n == right.m ) {
+		res.m = m; res.n = right.n;
+		if( res.elemPtr ) delete [] res.elemPtr;
+
+		res.elemPtr = new double[ res.m*res.n ];
+
+		for( int i = 0; i < res.m; i++ )
+			for( int j = 0; j < res.n; j++ )
+				for( int k = 0; k < res.m; k++ )
+					res.elemPtr[ (i*res.n) + j ] += elemPtr[ (i*n) + k ] * right.elemPtr[ (k*right.n) + j ];
+
+	}
+
+	return res;
+}
 
 // Operador << sobrecargado, muestra la matriz en pantalla en formato cuadriculado.
 ostream &operator <<( ostream &output, const Matrix &matrix ) {
 	// Imprime cada elemento del arreglo en formato cuadrado con salto cada n+1 elementos.
-	cout << endl;
+	output << endl;
 	for( int i = 0; i < ( matrix.m*matrix.n ); i++ )
-		output << setw( 12 ) << matrix.elemPtr[ i ] << ( ( (i+1)%matrix.n == 0 ) ? "\n" : " " );
-	cout << endl;
+		output << setw( 12 ) << matrix.elemPtr[ i ] << ( ( (i+1)%matrix.n == 0 ) ? '\n' : ' ' );
+	output << endl;
 
 	return output;
 }
 
+// Operador >> sobrecargado, permite introducir una matriz.
 istream &operator >>( istream &input, Matrix &matrix ) {
 	cout << endl;
 	for( int i = 0; i < matrix.m; i++ ) {
 		for( int j = 0; j < matrix.n; j++ ) {
 			cout << "Elemento [" << i << ", " << j << "] = ";
-			input >> matrix.elemPtr[ (i*matrix.m) + j ];
+			input >> matrix.elemPtr[ (i*matrix.n) + j ];
 		}
 	}
 	cout << endl;
