@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <cstdlib>
 #include <cassert>
 #include <iomanip>
 #include "../includes/matrix.hpp"
@@ -37,8 +38,16 @@ Matrix::Matrix( const Matrix &matrix ) : Matrix( matrix.m, matrix.n ) {
 // Destructor, libera la memoria almacenada con new.
 Matrix::~Matrix() {
 	delete [] elemPtr;
-	elemPtr = 0;
 }
+
+// Funciones miembro.
+	// Rellena la matriz con valores (enteros) aleatorios.
+void Matrix::randomMatrix() {
+	for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = ranNum( 0, 100 );
+}
+
+// Funciones utilitarias.
+int Matrix::ranNum( int min, int max ) { return ( rand()%max ) + min; }
 
 // Operadores sobrecargados.
 	// Operador de asignación.
@@ -107,6 +116,18 @@ const Matrix Matrix::operator *( const Matrix &right ) {
 	}
 
 	return res;
+}
+
+// Verificar que no se pase del límite de elementos.
+double &Matrix::operator ()( int x, int y ) {
+	if( (x-1) <= m && (y-1) <= n )
+		return elemPtr[ (x-1)*n + (y-1) ];
+	return elemPtr[0];
+}
+const double Matrix::operator ()( int x, int y ) const {
+	if( (x-1) <= m && (y-1) <= n )
+		return elemPtr[ (x-1)*n + (y-1) ];
+	return elemPtr[0];
 }
 
 // Operador << sobrecargado, muestra la matriz en pantalla en formato cuadriculado.
