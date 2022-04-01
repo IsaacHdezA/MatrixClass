@@ -161,11 +161,12 @@ const double Matrix::operator ()(int row, int col) const {
 	return elemPtr[0];
 }
 
+// Prints each matrix element in rectangular form with newline every n+1 elements.
 ostream &operator <<(ostream &output, const Matrix &matrix) {
-	// Imprime cada elemento del arreglo en formato cuadrado con salto cada n+1 elementos.
 	output << endl;
 	for(int i = 0; i < (matrix.m * matrix.n); i++)
-		output << setprecision(4) << matrix.elemPtr[i] << (((i + 1) % matrix.n == 0) ? '\n' : '\t');
+		output << setw(10) << setprecision(2) << fixed << right
+		       << matrix.elemPtr[i] << (((i + 1) % matrix.n == 0) ? '\n' : ' ');
 	output << endl;
 
 	return output;
