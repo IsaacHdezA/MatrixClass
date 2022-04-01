@@ -35,15 +35,33 @@ Matrix::Matrix( const Matrix &matrix ) : Matrix( matrix.m, matrix.n ) {
 	for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = matrix.elemPtr[i];
 }
 
+// Constructor copia: Crea matriz a partir de un arreglo.
+Matrix::Matrix( const double *arr, int size, int nRen, int nCol ) : Matrix( nRen, nCol ) {
+	if( size > 9 ) {
+		if( size == nRen * nCol )
+			for( int i = 0; i < (m*n); i++ ) elemPtr[i] = arr[i];
+		else {
+			cout << "Número de datos y dimensiones diferentes. Devolviendo matriz vacía.";
+			m = 1; n = 1;
+			elemPtr = new double[m*n];
+
+			assert( elemPtr != 0 );
+			for( int i = 0; i < ( m*n ); i++ ) elemPtr[ i ] = 0.0;
+		}
+	} else cout << "Arreglo vacío. Devolviendo matriz vacía." << endl;
+}
+
 // Destructor, libera la memoria almacenada con new.
 Matrix::~Matrix() {
 	delete [] elemPtr;
+	elemPtr = NULL;
 }
 
 // Funciones miembro.
 	// Rellena la matriz con valores (enteros) aleatorios.
-void Matrix::randomMatrix() {
+const Matrix Matrix::randomMatrix() {
 	for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = ranNum( 0, 100 );
+	return *this;
 }
 
 // Funciones utilitarias.
@@ -58,15 +76,15 @@ const Matrix &Matrix::operator =( const Matrix &right ) {
 		delete [] elemPtr;
 		m = right.m; n = right.n;
 
-		elemPtr = new double[ m*n ];
-		for( int i = 0; i < ( m*n ); i++ ) elemPtr[i] = right.elemPtr[i];
+		elemPtr = new double[m * n];
+		for( int i = 0; i < (m * n); i++ ) elemPtr[i] = right.elemPtr[i];
 	}
 
 	return *this;
 }
 
 	// Operador de adición.
-const Matrix Matrix::operator +( const Matrix &right ) {
+const Matrix Matrix::operator +( const Matrix &right ) const {
 	Matrix res;
 	
 	// Si la matriz tiene las mismas dimensiones se realiza la operación.
@@ -82,7 +100,7 @@ const Matrix Matrix::operator +( const Matrix &right ) {
 	return res;
 }
 
-const Matrix Matrix::operator -( const Matrix &right ) {
+const Matrix Matrix::operator -( const Matrix &right ) const {
 	Matrix res;
 
 	// Si la matriz tiene las mismas dimensiones se realiza la operación.
@@ -98,7 +116,7 @@ const Matrix Matrix::operator -( const Matrix &right ) {
 	return res;
 }
 
-const Matrix Matrix::operator *( const Matrix &right ) {
+const Matrix Matrix::operator *( const Matrix &right ) const {
 	Matrix res;
 
 	// Verificamos si las matrices son multiplicables.
@@ -112,21 +130,31 @@ const Matrix Matrix::operator *( const Matrix &right ) {
 			for( int j = 0; j < res.n; j++ )
 				for( int k = 0; k < res.m; k++ )
 					res.elemPtr[ (i*res.n) + j ] += elemPtr[ (i*n) + k ] * right.elemPtr[ (k*right.n) + j ];
-
 	}
 
 	return res;
 }
 
+// Operador de igualdad (==) sobrecargado.
+bool Matrix::operator ==( const Matrix &right ) const {
+	if( (this->m == right.m) && (this->n == right.n) ) {
+		const unsigned int SIZE = this->getLength();
+		for( int i = 0; i < SIZE; i++ )
+			if( this->elemPtr[i] != right.elemPtr[i] )
+				return false;
+	} else return false;
+
+	return true;
+}
+
 // Verificar que no se pase del límite de elementos.
 double &Matrix::operator ()( int x, int y ) {
-	if( (x-1) <= m && (y-1) <= n )
-		return elemPtr[ (x-1)*n + (y-1) ];
+	if( (x < m) && (y < n) ) return elemPtr[  (x*n) + y ];
 	return elemPtr[0];
 }
+
 const double Matrix::operator ()( int x, int y ) const {
-	if( (x-1) <= m && (y-1) <= n )
-		return elemPtr[ (x-1)*n + (y-1) ];
+	if( (x < m) && (y < n) ) return elemPtr[  (x*n) + y ];
 	return elemPtr[0];
 }
 
@@ -154,3 +182,4 @@ istream &operator >>( istream &input, Matrix &matrix ) {
 
 	return input;
 }
+

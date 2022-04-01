@@ -14,27 +14,30 @@ using std::ostream;
 using std::istream;
 
 class Matrix {
-
 	friend ostream &operator <<( ostream &, const Matrix & );
 	friend istream &operator >>( istream &, Matrix & );
 	
 	public:
 		Matrix( int = 1, int = 1 ); // Constructor paramétrico/por defecto.
 		Matrix( const Matrix & ); // Constructor copia.
+		Matrix( const double *, int, int, int ); // Constructor copia por apuntador.
 		~Matrix(); // Destructor.
 
 		// Funciones miembro.
-		int getRows() { return m; }
-		int getCols() { return n; }
-		void randomMatrix();
+		int getRows()   const { return m; }
+		int getCols()   const { return n; }
+		int getLength() const { return m * n; }
+		const Matrix randomMatrix();
 
 		// Operadores sobrecargados.
 		const Matrix &operator =( const Matrix & ); // Operador de copia.
-		const Matrix operator +( const Matrix & ); // Operador de adición.
-		const Matrix operator -( const Matrix & ); // Operador de sustracción.
-		const Matrix operator *( const Matrix & ); // Operador de producto.
-		double &operator ()( int, int ); //Operador paréntesis (permite modificar un elemento).
-		const double operator()( int, int ) const; // Operador paréntesis (sólo lectura).
+		const Matrix  operator +( const Matrix & ) const; // Operador de adición.
+		const Matrix  operator -( const Matrix & ) const; // Operador de sustracción.
+		const Matrix  operator *( const Matrix & ) const; // Operador de producto (mult. matrices).
+		bool operator ==( const Matrix &  ) const;  // Operador de igualdad.
+		bool operator !=( const Matrix &m ) const { return !( *this == m ); }
+		const double operator ()( int, int ) const; // Operador paréntesis (sólo lectura).
+		double &operator ()( int, int );           //Operador paréntesis (permite modificar un elemento).
 
 	private:
 		int m; // Número de renglones de la matriz.
