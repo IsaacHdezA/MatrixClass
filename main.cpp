@@ -26,7 +26,9 @@ int main( void ) {
 	cout << "Matriz 1(" << m1.getRows() << ", " << m1.getCols() << "): " << m1
 	     << "Matriz 2(" << m2.getRows() << ", " << m2.getCols() << "): " << m2
 	     << "Matriz 3(" << m3.getRows() << ", " << m3.getCols() << "): " << m3
-	     << "Matriz 4(" << m4.getRows() << ", " << m4.getCols() << "): " << m4 << endl;
+	     << "Matriz 4(" << m4.getRows() << ", " << m4.getCols() << "): " << m4
+	     << "5*m1: " << 5 * m1
+	     << "m1*5: " << m1 * 5 << endl;
 
 	return 0;
 }
