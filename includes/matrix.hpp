@@ -9,19 +9,22 @@
 #define MATRIX_HPP
 
 #include <iostream>
+#include <fstream>
 
 using std::ostream;
 using std::istream;
+using std::ifstream;
 
 class Matrix {
 	friend ostream &operator <<(ostream &, const Matrix &);
 	friend istream &operator >>(istream &, Matrix &);
-	friend Matrix  operator  *(double, const Matrix &);
+	friend Matrix   operator  *(double, const Matrix &);
 	
 	public:
 		Matrix(int = 1, int = 1);
 		Matrix(const Matrix &); // Copy constructor
 		Matrix(const double *, unsigned int, unsigned int, unsigned int); // Array constructor
+		Matrix(const char *);
 		~Matrix();
 
 		// Methods
@@ -29,6 +32,7 @@ class Matrix {
 		int getCols()   const { return n; }
 		int getLength() const { return m * n; }
 		const Matrix randomMatrix();
+		const Matrix importFromFile(const char *);
 
 		// Operadores sobrecargados.
 		const Matrix &operator =(const Matrix &);
@@ -48,6 +52,8 @@ class Matrix {
 
 		// Utility functions
 		int ranNum(int, int);
+		void countRowsAndCols(FILE *, unsigned int &, unsigned int &);
+		void importData(FILE *, unsigned int, unsigned int);
 };
 
 #endif

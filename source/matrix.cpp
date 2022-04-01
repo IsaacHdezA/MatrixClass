@@ -7,11 +7,13 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 #include <cassert>
 #include <iomanip>
 #include "../includes/matrix.hpp"
 
 using std::setw;
+using std::ifstream;
 using namespace std;
 
 // Default constructor
@@ -45,6 +47,27 @@ Matrix::Matrix(const double *arr, unsigned int size, unsigned int nRen, unsigned
 	} else return;
 }
 
+// Input matrix from file constructor.
+Matrix::Matrix(const char *filename) : Matrix() {
+	FILE *filePtr = fopen(filename, "r");
+	if(filePtr) {
+		unsigned int rows = 0, cols = 0;
+		countRowsAndCols(filePtr, rows, cols);
+
+		// Initializing our Matrix
+		m = rows;
+		n = cols;
+
+		if( elemPtr ) delete [] elemPtr;
+		elemPtr = new double[m*n];
+
+		// Importing data from file
+		importData(filePtr, rows, cols);
+
+		fclose(filePtr);
+	}
+}
+
 // Destructor, frees allocated memory.
 Matrix::~Matrix() {
 	delete [] elemPtr;
@@ -54,6 +77,28 @@ Matrix::~Matrix() {
 // Creates and return matrix with random values.
 const Matrix Matrix::randomMatrix() {
 	for(int i = 0; i < (m * n); i++) elemPtr[i] = ranNum(0, 100);
+	return *this;
+}
+
+// Imports Matrix from file
+const Matrix Matrix::importFromFile(const char *filename) {
+	FILE *filePtr = fopen(filename, "r");
+	if(filePtr) {
+		unsigned int rows = 0, cols = 0;
+		countRowsAndCols(filePtr, rows, cols);
+
+		// Initializing our Matrix
+		m = rows;
+		n = cols;
+
+		if( elemPtr ) delete [] elemPtr;
+		elemPtr = new double[m*n];
+
+		// Importing data from file
+		importData(filePtr, rows, cols);
+
+		fclose(filePtr);
+	}
 	return *this;
 }
 
@@ -173,7 +218,6 @@ ostream &operator <<(ostream &output, const Matrix &matrix) {
 }
 
 istream &operator >>(istream &input, Matrix &matrix) {
-	cout << endl;
 	for(int i = 0; i < matrix.m; i++)
 		input >> matrix.elemPtr[i];
 	cout << endl;
@@ -183,4 +227,32 @@ istream &operator >>(istream &input, Matrix &matrix) {
 
 // Utility functions
 int Matrix::ranNum(int min, int max) { return (rand()%max) + min; }
+
+void Matrix::countRowsAndCols(FILE *filePtr, unsigned int &rows, unsigned int &cols ) {
+	char buffer[255];
+	while(fgets(buffer, 255, filePtr) && buffer[0] != '\n') {
+		if( rows < 1 ) {
+			if(strtok(buffer, " ,:;")) cols++;
+			while( strtok( NULL, " ,:;" ) ) cols++;
+		}
+		rows++;
+	}
+	rewind( filePtr );
+}
+
+void Matrix::importData(FILE *filePtr, unsigned int rows, unsigned int cols ) {
+	char buffer[255];
+	for( int i = 0; i < m; i++ ) {
+		fgets(buffer, 255, filePtr);
+		if( buffer[0] != '\n' || buffer[0] != '\0' ) {
+			char *token;
+			token = strtok( buffer, " ,:;" );
+			(*this)(i,0) = atof(token);
+			for( int j = 1; j < n; j++ ) {
+				token = strtok( NULL, " ,:;" );
+				(*this)(i,j) = atof(token);
+			}
+		}
+	}
+}
 

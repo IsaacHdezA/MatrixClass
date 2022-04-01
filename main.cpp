@@ -21,14 +21,19 @@ int main( void ) {
 	cout << "Matriz 3(" << m3.getRows() << ", " << m3.getCols() << "): " << m3;
 
 	Matrix m4( arr, 9, 1, 9 );
+	Matrix m5("file.csv");
 
 	m3 = m1*m2;
 	cout << "Matriz 1(" << m1.getRows() << ", " << m1.getCols() << "): " << m1
 	     << "Matriz 2(" << m2.getRows() << ", " << m2.getCols() << "): " << m2
 	     << "Matriz 3(" << m3.getRows() << ", " << m3.getCols() << "): " << m3
 	     << "Matriz 4(" << m4.getRows() << ", " << m4.getCols() << "): " << m4
+	     << "Matriz 5(" << m5.getRows() << ", " << m5.getCols() << "): " << m5
 	     << "5*m1: " << 5 * m1
 	     << "m1*5: " << m1 * 5 << endl;
+
+	cout << "Matriz Importada con método(" << m1.getRows() << ", " << m1.getCols() << "): " << m5.importFromFile("numeritos.csv");
+
 
 	return 0;
 }
